@@ -1,10 +1,13 @@
 {
   "name": "@code-essentials/utils",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
   "scripts": {
     "clean": "rm -rf dist",
     "prebuild": "npm run clean",
@@ -17,7 +20,7 @@
   },
   "devDependencies": {
     "@ava/typescript": "^6.0.0",
-    "@code-essentials/tsconfig": "^1.0",
+    "@code-essentials/tsconfig": "^1.0.3",
     "@types/node": "^24.5.2",
     "ava": "^6.4.1",
     "typescript": "^5.9.2"
