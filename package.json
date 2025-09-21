@@ -1,6 +1,6 @@
 {
   "name": "@code-essentials/utils",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "",
   "type": "module",
   "main": "./dist/index.js",
@@ -12,7 +12,8 @@
     "build": "tsc",
     "build:debug": "tsc -p tsconfig.debug.json",
     "pretest": "npm run build:debug",
-    "test": "ava"
+    "test": "ava",
+    "prepublishOnly": "npm test && npm run build"
   },
   "devDependencies": {
     "@ava/typescript": "^6.0.0",
