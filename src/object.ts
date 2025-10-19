@@ -1,5 +1,15 @@
 export type Values<T extends object> = T[keyof T]
 
+type EntryMap<T> = {
+    [K in keyof T]: [K, T[K]]
+}
+
+export type Entry<T> = EntryMap<T>[keyof T]
+
+export function entries<T extends object>(o: T): Entry<T>[] {
+    return <Entry<T>[]>Object.entries(o)
+}
+
 export type PropertyPath<T> = 
     | []
     | T extends object ? Values<{
