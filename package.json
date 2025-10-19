@@ -10,34 +10,20 @@
   ],
   "scripts": {
     "clean": "rm -rf dist",
-    "prebuild": "npm run clean",
-    "prebuild:debug": "npm run clean",
+    "prebuild": "pnpm run clean",
+    "prebuild:debug": "pnpm run clean",
     "build": "tsc",
     "build:debug": "tsc -p tsconfig.debug.json",
-    "pretest": "npm run build:debug",
+    "pretest": "pnpm run build:debug",
     "test": "ava",
-    "prepublishOnly": "npm test && npm run build"
+    "prepublishOnly": "pnpm test && pnpm run build"
   },
   "devDependencies": {
     "@ava/typescript": "^6.0.0",
     "@code-essentials/tsconfig": "^1.0.3",
-    "@types/node": "^24.5.2",
+    "@types/node": "^24.8.1",
     "ava": "^6.4.1",
-    "typescript": "^5.9.2"
-  },
-  "ava": {
-    "files": [
-      "src/**/*.spec.ts"
-    ],
-    "typescript": {
-      "rewritePaths": {
-        "src/": "dist/"
-      },
-      "extensions": [
-        "ts"
-      ],
-      "compile": false
-    }
+    "typescript": "^5.9.3"
   },
   "author": {
     "name": "Isaac Valdez",
