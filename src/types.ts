@@ -19,3 +19,26 @@ export type Prefixed<Prefix extends string, T extends object> = {
 export function prefixed<Prefix extends string, T extends object>(prefix: Prefix, o: T): Prefixed<Prefix, T> {
     return <Prefixed<Prefix, T>>Object.fromEntries(Object.entries(o).map(([k, v]) => [`${prefix}${k}`, v] as const))
 }
+
+export type RemovePrefix<Prefix extends string, T extends object> =
+    T extends Prefixed<Prefix, infer Unprefixed> ? Unprefixed : {
+    [K in string & keyof T as K extends `${Prefix}${infer K1}` ? K1 : never]: T[K]
+}
+
+export function removePrefix<const Prefix extends string, const T extends object>(prefix: Prefix, o: T): RemovePrefix<Prefix, T> {
+    return <RemovePrefix<Prefix, T>>Object.fromEntries(
+        Object.entries(o)
+            .filter(([k]) => k.startsWith(prefix) && k.length > prefix.length)
+            .map(([k, v]) => [k.substring(prefix.length), v] as const)
+    )
+}
+
+export function assert<_Assertion extends true>() { }
+
+export type Eq<A, B> = A extends B ? B extends A ? true : false : false
+
+export type Extends<A, B> = A extends B ? true : false
+
+export function never(): never {
+    throw new Error("never")
+}

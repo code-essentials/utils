@@ -1,6 +1,6 @@
 {
   "name": "@code-essentials/utils",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "",
   "type": "module",
   "main": "./dist/index.js",
@@ -21,6 +21,7 @@
   "devDependencies": {
     "@ava/typescript": "^6.0.0",
     "@code-essentials/tsconfig": "^1.0.3",
+    "@code-essentials/ava-typescript": "^1.0.0",
     "@types/node": "^24.8.1",
     "ava": "^6.4.1",
     "typescript": "^5.9.3"
@@ -29,6 +30,10 @@
     "name": "Isaac Valdez",
     "email": "isaac_valdez@msn.com",
     "url": "https://i12345.github.io"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/code-essentials/utils.git"
   },
   "license": "MIT"
 }
