@@ -4,7 +4,7 @@ type EntryMap<T> = {
     [K in keyof T]: [K, T[K]]
 }
 
-export type Entry<T> = EntryMap<T>[keyof T]
+export type Entry<T> = NonNullable<EntryMap<T>[keyof T]>
 
 export function entries<T extends object>(o: T): Entry<T>[] {
     return <Entry<T>[]>Object.entries(o)
