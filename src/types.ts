@@ -42,3 +42,5 @@ export type Extends<A, B> = A extends B ? true : false
 export function never(): never {
     throw new Error("never")
 }
+
+export type Mutable<T> = { -readonly [K in keyof T]: T[K] }
