@@ -6,6 +6,8 @@ export type PartlyDeleteable<T, K extends keyof T> = {
     [K1 in keyof T as (K1 extends K ? never : K1)]: T[K1]
 } & Deleteable<T, K>
 
+export type PartiallyPartial<T, K extends keyof T> = Omit<T, K> & Deleteable<Pick<T, K>>
+
 export type UndefinedIf<T, Condition extends boolean = boolean> = Condition extends true ? undefined : T
 
 export function undefinedIf<T, Condition extends boolean = boolean>(condition: Condition, item: () => T): UndefinedIf<T, Condition> {
