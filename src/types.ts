@@ -35,6 +35,16 @@ export function removePrefix<const Prefix extends string, const T extends object
     )
 }
 
+export type ValuesPrefixed<Prefix extends string, T extends Record<PropertyKey, string>> = {
+    [K in keyof T]: `${Prefix}${T[K]}`
+}
+
+export function valuesPrefixed<Prefix extends string, T extends Record<PropertyKey, string>>(prefix: Prefix, values: T) {
+    return <ValuesPrefixed<Prefix, T>>Object.fromEntries(
+        Object.entries(values).map(([k, value]) => [k, prefix + value])
+    )
+}
+
 export function assert<_Assertion extends true>() { }
 
 export type Eq<A, B> = A extends B ? B extends A ? true : false : false
