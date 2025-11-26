@@ -56,3 +56,7 @@ export function never(): never {
 }
 
 export type Mutable<T> = { -readonly [K in keyof T]: T[K] }
+
+export type DeeplyReadonly<T> = T extends object ? T extends null ? T : {
+    readonly [K in keyof T]: DeeplyReadonly<T[K]>
+} : T
