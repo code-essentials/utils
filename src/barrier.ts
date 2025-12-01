@@ -5,7 +5,7 @@ interface EnqueuedTask<T> {
     completion: AsyncVariable<T>
 }
 
-export class Barrier<T = any> implements PromiseLike<T[]> {
+export class Barrier<T = any> implements PromiseLike<T[]>, AsyncDisposable {
     readonly queue: EnqueuedTask<T>[] = []
 
     await(...asyncTasks: PromiseLike<T>[]) {
@@ -31,6 +31,10 @@ export class Barrier<T = any> implements PromiseLike<T[]> {
         const result = await this
         this.clear()
         return result
+    }
+
+    async [Symbol.asyncDispose]() {
+        await this
     }
 
     async then<TResult1 = T[], TResult2 = never>(
