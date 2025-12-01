@@ -1,6 +1,7 @@
 export * from './types.js'
 export * from './strings.js'
 export * from './async-variable.js'
+export * from './barrier.js'
 export * from './observable-list.js'
 export * from './object.js'
 export * from './lock.js'

@@ -119,8 +119,17 @@ export class AsyncVariable<T> implements PromiseLike<T> {
         return av
     }
 
-    perform(fn: () => Promise<T>): this {
-        fn().then(value => this.set(value)).catch(error => this.reject(error))
+    async writeResult(task: PromiseLike<T>) {
+        try {
+            await this.set(await task)
+        }
+        catch (error) {
+            await this.reject(error)
+        }
+    }
+
+    perform(fn: () => PromiseLike<T>): this {
+        this.writeResult(fn())
 
         return this
     }
