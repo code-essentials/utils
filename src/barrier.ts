@@ -34,7 +34,7 @@ export class Barrier<T = any> implements PromiseLike<T[]>, AsyncDisposable {
     }
 
     async [Symbol.asyncDispose]() {
-        await this
+        await this.complete()
     }
 
     async then<TResult1 = T[], TResult2 = never>(

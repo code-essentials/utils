@@ -2,7 +2,7 @@ import test from 'ava'
 import { Barrier } from './barrier.js'
 import { AsyncVariable } from './async-variable.js'
 
-async function delayedValue(ms: number, value: number) {
+async function delayedValue<T>(ms: number, value: T) {
     await AsyncVariable.wait(ms)
     return value
 }
@@ -85,4 +85,23 @@ test("barrier.clear() removes current items", async t => {
 
     const res1 = await barrier.complete()
     t.deepEqual(res1, [8, 9])
+})
+
+test("barrier not disposed until complete", async t => {
+    const a = new AsyncVariable<void>()
+
+    t.timeout(100)
+    t.plan(2)
+
+    {
+        await using barrier = new Barrier()
+        async function f() {
+            await delayedValue(50, undefined)
+            a.set()
+        }
+        barrier.await(f())
+        t.false(a.complete)
+    }
+
+    t.true(a.complete)
 })
