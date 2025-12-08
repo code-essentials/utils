@@ -87,6 +87,19 @@ test("barrier.clear() removes current items", async t => {
     t.deepEqual(res1, [8, 9])
 })
 
+test("barrier.run()", async t => {
+    const barrier = new Barrier()
+
+    t.timeout(100)
+
+    for (let i = 0; i < 100; i++)
+        barrier.run(async () => await delayedValue(50, undefined))
+
+    await barrier
+
+    t.pass()
+})
+
 test("barrier not disposed until complete", async t => {
     const a = new AsyncVariable<void>()
 

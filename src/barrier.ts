@@ -9,7 +9,8 @@ export class Barrier<T = any> implements PromiseLike<T[]>, AsyncDisposable {
     readonly queue: EnqueuedTask<T>[] = []
 
     await(...asyncTasks: PromiseLike<T>[]) {
-        this.run(...asyncTasks)
+        for (const asyncTask of asyncTasks)
+            this.#run(asyncTask)
     }
 
     async #run(task: PromiseLike<T>) {
@@ -18,9 +19,9 @@ export class Barrier<T = any> implements PromiseLike<T[]>, AsyncDisposable {
         completion.writeResult(task)
     }
 
-    run(...asyncTasks: PromiseLike<T>[]) {
-        for (const task of asyncTasks)
-            this.#run(task)
+    run(...asyncFunctions: (() => PromiseLike<T>)[]) {
+        for (const func of asyncFunctions)
+            this.#run(func())
     }
 
     clear() {
