@@ -60,3 +60,10 @@ export type Mutable<T> = { -readonly [K in keyof T]: T[K] }
 export type DeeplyReadonly<T> = T extends object ? T extends null ? T : {
     readonly [K in keyof T]: DeeplyReadonly<T[K]>
 } : T
+
+export type NonConstructorKeys<T> = { 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [P in keyof T]: T[P] extends new (...args: any[]) => any ? never : P 
+}[keyof T];
+
+export type NonConstructor<T> = Pick<T, NonConstructorKeys<T>>;
