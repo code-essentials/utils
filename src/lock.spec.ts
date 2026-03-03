@@ -25,7 +25,9 @@ test('disposable release', t => {
     }
 
     function acquire_0() {
-        using _context1 = lock.acquire()
+        using context = lock.acquire()
+        void context
+
         acquire(false)
     }
 
