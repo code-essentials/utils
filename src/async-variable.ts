@@ -72,8 +72,11 @@ export class AsyncVariable<T> implements PromiseLike<T> {
         return this.value
     }
 
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | null | undefined, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null | undefined): PromiseLike<TResult1 | TResult2> {
-        return this.read().then(onfulfilled, onrejected)
+    then<TResult1 = T, TResult2 = never>(
+            onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | null | undefined,
+            onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null | undefined
+        ): AsyncVariable<TResult1 | TResult2> {
+        return AsyncVariable.perform(() => this.read().then(onfulfilled, onrejected))
     }
 
     async #complete(throw_if_set = true) {
