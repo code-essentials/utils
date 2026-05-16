@@ -16,13 +16,14 @@ type AsyncVariableResult<T> =
 
 export class AsyncVariable<T> implements PromiseLike<T> {
     #result: AsyncVariableResult<T> | undefined
-    #result_res!: (res: AsyncVariableResult<T>) => void
-    #result_p!: Promise<AsyncVariableResult<T>>
-    readonly #initialization: Promise<void>
+    #result_res: (res: AsyncVariableResult<T>) => void
+    #result_p: Promise<AsyncVariableResult<T>>
+
+    static readonly ERR_NOT_RESOLVED = "async variable not resolved or rejected"
 
     get value(): T {
         if (!this.#result)
-            throw new Error('incomplete')
+            throw new Error(AsyncVariable.ERR_NOT_RESOLVED)
 
         if (this.#result.type === "rejected")
             throw this.#result.error
@@ -53,21 +54,13 @@ export class AsyncVariable<T> implements PromiseLike<T> {
     }
 
     constructor() {
-        this.#initialization = new Promise(initialized =>
-            // prevents unhandled rejection
-            this.#result_p = new Promise(res => {
-                this.#result_res = res
-                initialized()
-            })
-        )
-    }
+        const { resolve, promise } = Promise.withResolvers<AsyncVariableResult<T>>()
 
-    async init() {
-        await this.#initialization
+        this.#result_p = promise
+        this.#result_res = (res => resolve(this.#result = res))
     }
 
     async read() {
-        await this.#initialization
         await this.#result_p
         return this.value
     }
@@ -79,8 +72,7 @@ export class AsyncVariable<T> implements PromiseLike<T> {
         return AsyncVariable.perform(() => this.read().then(onfulfilled, onrejected))
     }
 
-    async #complete(throw_if_set = true) {
-        await this.#initialization
+    #complete(throw_if_set = true) {
         if (this.complete) {
             if (throw_if_set)
                 throw new Error('already set')
@@ -91,8 +83,8 @@ export class AsyncVariable<T> implements PromiseLike<T> {
         return true
     }
 
-    async set(value: T, throw_if_set = true) {
-        if (await this.#complete(throw_if_set)) {
+    set(value: T, throw_if_set = true) {
+        if (this.#complete(throw_if_set)) {
             this.#result_res(this.#result = {
                 type: "resolved",
                 value
@@ -100,8 +92,8 @@ export class AsyncVariable<T> implements PromiseLike<T> {
         }
     }
 
-    async reject(error: unknown, throw_if_set = true) {
-        if (await this.#complete(throw_if_set)) {
+    reject(error: unknown, throw_if_set = true) {
+        if (this.#complete(throw_if_set)) {
             this.#result_res(this.#result = {
                 type: "rejected",
                 error
@@ -124,10 +116,10 @@ export class AsyncVariable<T> implements PromiseLike<T> {
 
     async writeResult(task: PromiseLike<T>) {
         try {
-            await this.set(await task)
+            this.set(await task)
         }
         catch (error) {
-            await this.reject(error)
+            this.reject(error)
         }
     }
 
