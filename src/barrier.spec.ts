@@ -110,7 +110,7 @@ test("barrier not disposed until complete", async t => {
         await using barrier = new Barrier()
         async function f() {
             await delayedValue(50, undefined)
-            await a.set()
+            a.set()
         }
         barrier.await(f())
         t.false(a.complete)
