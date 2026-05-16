@@ -5,7 +5,7 @@ interface EnqueuedTask<T> {
     completion: AsyncVariable<T>
 }
 
-export class Barrier<T = any> implements PromiseLike<T[]>, AsyncDisposable {
+export class Barrier<T = unknown> implements PromiseLike<T[]>, AsyncDisposable {
     readonly queue: EnqueuedTask<T>[] = []
 
     await(...asyncTasks: PromiseLike<T>[]) {
@@ -13,10 +13,10 @@ export class Barrier<T = any> implements PromiseLike<T[]>, AsyncDisposable {
             this.#run(asyncTask)
     }
 
-    async #run(task: PromiseLike<T>) {
+    #run(task: PromiseLike<T>) {
         const completion = new AsyncVariable<T>()
         this.queue.push({ task, completion })
-        completion.writeResult(task)
+        void completion.writeResult(task)
     }
 
     run(...asyncFunctions: (() => PromiseLike<T>)[]) {
@@ -39,8 +39,8 @@ export class Barrier<T = any> implements PromiseLike<T[]>, AsyncDisposable {
     }
 
     async then<TResult1 = T[], TResult2 = never>(
-        onfulfilled?: ((value: T[]) => TResult1 | PromiseLike<TResult1>) | null | undefined,
-        onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null | undefined
+        onfulfilled?: ((value: T[]) => TResult1 | PromiseLike<TResult1>) | null,
+        onrejected?: ((reason: unknown) => TResult2 | PromiseLike<TResult2>) | null
     ): Promise<TResult1 | TResult2> {
         try {
             const values = await Promise.all(this.queue.map(({ completion }) => completion))

@@ -7,7 +7,7 @@ interface AsyncVariableResultResolved<T> extends AsyncVariableResultBase<"resolv
 }
 
 interface AsyncVariableResultRejected extends AsyncVariableResultBase<"rejected"> {
-    readonly error: any
+    readonly error: unknown
 }
 
 type AsyncVariableResult<T> =
@@ -31,7 +31,7 @@ export class AsyncVariable<T> implements PromiseLike<T> {
     }
 
     set value(value) {
-        this.set(value)
+        void this.set(value)
     }
 
     get error() {
@@ -45,7 +45,7 @@ export class AsyncVariable<T> implements PromiseLike<T> {
     }
 
     set error(error) {
-        this.reject(error)
+        void this.reject(error)
     }
 
     get complete() {
@@ -73,9 +73,9 @@ export class AsyncVariable<T> implements PromiseLike<T> {
     }
 
     then<TResult1 = T, TResult2 = never>(
-            onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | null | undefined,
-            onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null | undefined
-        ): AsyncVariable<TResult1 | TResult2> {
+        onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | null,
+        onrejected?: ((reason: unknown) => TResult2 | PromiseLike<TResult2>) | null
+    ): AsyncVariable<TResult1 | TResult2> {
         return AsyncVariable.perform(() => this.read().then(onfulfilled, onrejected))
     }
 
@@ -112,11 +112,11 @@ export class AsyncVariable<T> implements PromiseLike<T> {
     static performCallback<R = void>(fn: (cb: (err?: unknown, res?: R) => void) => void): AsyncVariable<R> {
         const av = new AsyncVariable<R>()
 
-        fn(async (err, res) => {
-            if (err)
-                await av.error(err)
+        fn((err, res) => {
+            if (err !== undefined)
+                void av.reject(err)
             else
-                await av.set(<R>res)
+                void av.set(<R>res)
         })
 
         return av
@@ -132,7 +132,7 @@ export class AsyncVariable<T> implements PromiseLike<T> {
     }
 
     perform(fn: () => PromiseLike<T>): this {
-        this.writeResult(fn())
+        void this.writeResult(fn())
 
         return this
     }
@@ -140,7 +140,7 @@ export class AsyncVariable<T> implements PromiseLike<T> {
     timeout(milliseconds: number): this {
         AsyncVariable.wait(milliseconds).then(() => {
             if (!this.complete)
-                this.reject("timeout")
+                void this.reject("timeout")
         })
 
         return this
@@ -152,7 +152,7 @@ export class AsyncVariable<T> implements PromiseLike<T> {
 
     static wait(milliseconds: number) {
         const res = new AsyncVariable<void>()
-        setTimeout(() => res.set(), milliseconds)
+        setTimeout(() => void res.set(), milliseconds)
         return res
     }
 }

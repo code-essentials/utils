@@ -7,8 +7,8 @@ export interface ObservableListProtocols<T> {
 export class ObservableList<T> extends Array<T> {
     constructor(length: number)
     constructor(...items: T[])
-    constructor(...itemsOrArrayLength: any[]) {
-        super(...itemsOrArrayLength)
+    constructor(...itemsOrArrayLength: T[] | [number]) {
+        super(...(<T[]>itemsOrArrayLength))
     }
 
     override push(...items: T[]): number {
@@ -45,7 +45,7 @@ export class ObservableList<T> extends Array<T> {
         return result
     }
 
-    override sort(compareFn?: ((a: T, b: T) => number) | undefined): this {
+    override sort(compareFn?: ((a: T, b: T) => number)): this {
         const result = super.sort(compareFn)
 
         this.forEach((item, i) => this.#emit("reorder", item, i))
@@ -73,7 +73,7 @@ export class ObservableList<T> extends Array<T> {
         if ((deleteCount ?? 0) !== (items?.length ?? 0))
             for (let i = start + (items?.length ?? 0); i < this.length; i++)
                 this.#emit("reorder", this[i]!, i)
-        
+
         items.forEach((item, i) => this.#emit("insert", item, start + i))
 
         return deleted
@@ -97,7 +97,7 @@ export class ObservableList<T> extends Array<T> {
     }
 
     #emit<Protocol extends keyof ObservableListProtocols<T>>(protocol: Protocol, ...parameters: Parameters<ObservableListProtocols<T>[Protocol]>): ReturnType<ObservableListProtocols<T>[Protocol]>[] {
-        return [...this.#responders[protocol]].map(responder => (<any>responder)(...parameters))
+        return [...this.#responders[protocol]].map(responder => (<(...parameters: Parameters<ObservableListProtocols<T>[Protocol]>) => ReturnType<ObservableListProtocols<T>[Protocol]>>responder)(...parameters))
     }
 
     on<Protocol extends keyof ObservableListProtocols<T>>(protocol: Protocol, responder: ObservableListProtocols<T>[Protocol]) {

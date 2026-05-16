@@ -12,6 +12,7 @@ export class Lock<Of = void> {
         return new LockContext(this, of, this.release.bind(this))
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     protected release(_context: LockContext<Of>) {
         if (!this.isAcquired)
             throw new Error()
@@ -27,10 +28,10 @@ export class LockContext<Of> implements Disposable {
     #isAcquired = true
 
     constructor(
-            readonly lock: Lock<Of>,
-            readonly of: Of,
-            release: (conext: LockContext<Of>) => void
-        ) {
+        readonly lock: Lock<Of>,
+        readonly of: Of,
+        release: (conext: LockContext<Of>) => void
+    ) {
         this.#release = release
     }
 

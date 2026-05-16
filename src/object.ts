@@ -10,17 +10,17 @@ export function entries<T extends object>(o: T): Entry<T>[] {
     return <Entry<T>[]>Object.entries(o)
 }
 
-export type PropertyPath<T> = 
+export type PropertyPath<T> =
     | []
     | T extends object ? Values<{
         [K in keyof T]: [K] | [K, Values<PropertyPath<T[K]>>]
     }> : []
 
 export type PropertyType<T, Property extends PropertyPath<T>> = PropertyType_<T, Property>
-type PropertyType_<T, Property extends any[], Constructed extends any[] = []> =
+type PropertyType_<T, Property extends unknown[], Constructed extends unknown[] = []> =
     (Property & Constructed) extends never ?
     Values<{
-        [K in keyof T as Property extends [...Constructed, K, ...any[]] ? K : never]:
+        [K in keyof T as Property extends [...Constructed, K, ...unknown[]] ? K : never]:
         PropertyType_<T[K], Property, [...Constructed, K]>
     }> :
     T
@@ -53,18 +53,20 @@ type PropertyType_<T, Property extends any[], Constructed extends any[] = []> =
 // type ac_type = PropertyType_<A, typeof ac>
 
 export function replaceProperty<T, Property extends PropertyPath<T> = PropertyPath<T>>(
-        obj: T,
-        property: Property,
-        value: any
-    ): T {
+    obj: T,
+    property: Property,
+    value: unknown
+): T {
     if (property.length === 0)
-        return <T>((<any>value) ?? obj)
+        return <T>((value) ?? obj)
 
-    if (typeof obj !== 'object')
+    if (!(obj instanceof Object))
         throw new Error()
 
-    const prototype = Object.create(obj)
-    const property0 = property[0]!
-    prototype[property0] = replaceProperty<any>((<any>obj)[property0]!, <any>property.slice(1), value)
-    return <T>prototype
+    const prototype = <T>Object.create(obj)
+
+    const property0 = property[0]
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+    prototype[property0] = replaceProperty<NonNullable<T>[keyof T]>((<any>obj)[property0], <PropertyPath<T[keyof T]>>property.slice(1), value)
+    return prototype
 }

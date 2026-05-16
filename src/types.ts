@@ -24,8 +24,8 @@ export function prefixed<Prefix extends string, T extends object>(prefix: Prefix
 
 export type RemovePrefix<Prefix extends string, T extends object> =
     T extends Prefixed<Prefix, infer Unprefixed> ? Unprefixed : {
-    [K in string & keyof T as K extends `${Prefix}${infer K1}` ? K1 : never]: T[K]
-}
+        [K in string & keyof T as K extends `${Prefix}${infer K1}` ? K1 : never]: T[K]
+    }
 
 export function removePrefix<const Prefix extends string, const T extends object>(prefix: Prefix, o: T): RemovePrefix<Prefix, T> {
     return <RemovePrefix<Prefix, T>>Object.fromEntries(
@@ -45,6 +45,7 @@ export function valuesPrefixed<Prefix extends string, T extends Record<PropertyK
     )
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function assert<_Assertion extends true>() { }
 
 export type Eq<A, B> = A extends B ? B extends A ? true : false : false
@@ -61,9 +62,9 @@ export type DeeplyReadonly<T> = T extends object ? T extends null ? T : {
     readonly [K in keyof T]: DeeplyReadonly<T[K]>
 } : T
 
-export type NonConstructorKeys<T> = { 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [P in keyof T]: T[P] extends new (...args: any[]) => any ? never : P 
+export type NonConstructorKeys<T> = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    [P in keyof T]: T[P] extends new (...args: any[]) => any ? never : P
 }[keyof T];
 
 export type NonConstructor<T> = Pick<T, NonConstructorKeys<T>>;

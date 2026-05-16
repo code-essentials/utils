@@ -27,7 +27,7 @@ test("barrier passes with 1 awaited", async t => {
     barrier.await(delayedValue(50, 1))
 
     await barrier
-    
+
     t.pass()
 })
 
@@ -41,7 +41,7 @@ test("barrier passes with 3 awaited, values returned", async t => {
     barrier.await(delayedValue(30, 3))
 
     const res = await barrier
-    
+
     t.deepEqual(res, [1, 2, 3])
 })
 
@@ -74,7 +74,7 @@ test("barrier.clear() removes current items", async t => {
     barrier.await(delayedValue(50, 1))
     barrier.await(delayedValue(40, 2))
     barrier.await(delayedValue(30, 3))
-    
+
     barrier.clear()
 
     const res0 = await barrier.complete()
@@ -110,7 +110,7 @@ test("barrier not disposed until complete", async t => {
         await using barrier = new Barrier()
         async function f() {
             await delayedValue(50, undefined)
-            a.set()
+            await a.set()
         }
         barrier.await(f())
         t.false(a.complete)
