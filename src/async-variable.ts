@@ -101,14 +101,28 @@ export class AsyncVariable<T> implements PromiseLike<T> {
         }
     }
 
+    static async callback<R = void>(fn: (cb: (err?: unknown, res?: R) => void) => void | PromiseLike<void>): Promise<AsyncVariable<R>> {
+        const av = new AsyncVariable<R>()
+
+        await fn((err, res) => {
+            if (err !== undefined)
+                av.reject(err)
+            else
+                av.set(<R>res)
+        })
+
+        return av
+    }
+
+    /** @deprecated */
     static performCallback<R = void>(fn: (cb: (err?: unknown, res?: R) => void) => void): AsyncVariable<R> {
         const av = new AsyncVariable<R>()
 
         fn((err, res) => {
             if (err !== undefined)
-                void av.reject(err)
+                av.reject(err)
             else
-                void av.set(<R>res)
+                av.set(<R>res)
         })
 
         return av
