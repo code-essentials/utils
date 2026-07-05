@@ -3,7 +3,19 @@
     "compilerOptions": {
         "outDir": "dist",
         "rootDir": "src",
+        // DOM is removed in @code-essentials/tsconfig/tsconfig.prod.json
+        "lib": [
+            "ESNext",
+            "DOM",
+        ],
     },
-    "include": ["src"],
-    "exclude": ["node_modules", "dist", "src/**/*.spec.ts", "test"],
+    "include": [
+        "src"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist",
+        "src/**/*.spec.ts",
+        "test"
+    ],
 }

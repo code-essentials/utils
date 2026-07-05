@@ -3,7 +3,19 @@
     "compilerOptions": {
         "outDir": "tmp",
         "rootDir": ".",
+        "lib": [
+            "ESNext",
+            "DOM",
+        ],
     },
-    "include": ["src", "src/**/*.spec.ts", "test", "eslint.config.mjs"],
-    "exclude": ["node_modules", "dist"],
+    "include": [
+        "src",
+        "src/**/*.spec.ts",
+        "test",
+        "eslint.config.mjs"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist"
+    ],
 }
