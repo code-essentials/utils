@@ -8,9 +8,11 @@ interface EnqueuedTask<T> {
 export class Barrier<T = unknown> implements PromiseLike<T[]>, AsyncDisposable {
     readonly queue: EnqueuedTask<T>[] = []
 
-    await(...asyncTasks: PromiseLike<T>[]) {
+    await(...asyncTasks: PromiseLike<T>[]): this {
         for (const asyncTask of asyncTasks)
             this.#run(asyncTask)
+
+        return this
     }
 
     #run(task: PromiseLike<T>) {
@@ -19,13 +21,17 @@ export class Barrier<T = unknown> implements PromiseLike<T[]>, AsyncDisposable {
         void completion.writeResult(task)
     }
 
-    run(...asyncFunctions: (() => PromiseLike<T>)[]) {
+    run(...asyncFunctions: (() => PromiseLike<T>)[]): this {
         for (const func of asyncFunctions)
             this.#run(func())
+
+        return this
     }
 
-    clear() {
+    clear(): this {
         this.queue.splice(0, this.queue.length)
+
+        return this
     }
 
     async complete() {
